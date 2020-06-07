@@ -1,0 +1,67 @@
+syntax = "proto3";
+package messaging.rpc.providers.grpc.clocknode;
+
+service Scheduler {
+    rpc AddSchedule(AddScheduleRequest) returns (AddScheduleResponse);
+    rpc RemoveSchedule(RemoveScheduleRequest) returns (RemoveScheduleResponse);
+    rpc ReplaceSchedules(ReplaceSchedulesRequest) returns (ReplaceSchedulesResponse);
+    rpc HealthPing(HealthPingRequest) returns (HealthPingResponse);
+}
+
+
+message HealthPingRequest {};
+
+
+message HealthPingResponse {};
+
+
+message AddScheduleRequest {
+    Schedule schedule = 1;
+}
+
+
+message AddScheduleResponse {}
+
+
+message RemoveScheduleRequest {
+    string id = 1;
+}
+
+
+message RemoveScheduleResponse {
+}
+
+
+
+message ReplaceSchedulesRequest {
+    repeated Schedule schedules = 1;
+}
+
+
+message ReplaceSchedulesResponse {}
+
+
+message Schedule {
+    string uuid = 1;
+    string name = 2;
+    string trigger_type = 3;
+    ScheduleDetails schedule_details = 4;
+}
+
+
+message ScheduleDetails {
+    string second = 1;
+    string minute = 2;
+    string hour = 3;
+    string day = 4;
+    string day_of_weel = 5; 
+    string week = 6;
+    string month = 7;
+    string year = 8;
+    string start_date = 9;
+    string end_date = 10;
+    string timezone = 11;
+    string jitter = 12;
+    int32 type = 13;
+    int32 max_grace_time = 14;
+}

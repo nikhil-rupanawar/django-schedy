@@ -7,31 +7,18 @@ from django.db import models
 
 
 class Director(models.Model):
-
-    class Space(models.TextChoices):
-        HOUR = 'HOUR'
-        DAY = 'DAY'
-
-    DEFAULT_SPACE = SPACE.HOUR
-
-    class PartitionStrategy(models.TextChoices):
-        ROUND_ROBIN = "ROUND_ROBIN"
-        MINUTE_HAND = "MINUTE_HAND"
-        HOUR_HAND = "HOUR_HAND"
-
-    DEHAULT_PARTITION_STRATEGY = "ROUND_ROBIN"
-
     uuid = models.UUIDField(default=uuid4)
     name = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
     registery_service_uri = models.CharField(max_length=255)
+    minute_space_size = models.IntegerField()
 
     def register_clock_node(self, clocknode):
         return clocknode.save()
 
     def deregister_clock_node(self, clocknode):
-        return clocknode.delete()
+        clocknode.deregister()
 
     def route(self, schedule):
         ...
@@ -39,7 +26,7 @@ class Director(models.Model):
     def rebalance(self, clocknodes):
         ...
 
-    def ping(self, clocknode):
+    def configure(self, config):
         ...
 
 
@@ -47,12 +34,14 @@ class ClockNode(models.Model):
     uri = models.CharField(max_length=255)
     last_seen = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     last_used = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    disabled = models.BooleanField(default=False)
     schedule_count = models.IntegerField(null=True)
     max_schedule_count = models.IntegerField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
     registered_on = models.DateTimeField(auto_now_add=True)
+    reschdule_on_registration = models.BooleanField(default=True)
+    is_disabled = models.BooleanField(null=True)
+    is_deleted = models.BooleanField(null=True)
     director = models.ForeignKey(Director, on_delete=models.SET_NULL, null=True)
 
     @classmethod
@@ -63,23 +52,16 @@ class ClockNode(models.Model):
         raise NotImplementedError("Not implemented")
 
     @property
-    def rpc(self):
-        return rpcclient.RPCClient(self.uri)
+    def rpcclient(self):
+        return rpc.rpcclient.ClockNodeRpcClient(self.uri)
 
-
-class RoundRobinClockNode(ClockNode):
-    class Meta:
-        proxy = True
-
-    @classmethod
-    def select_node(cls, schedule):
-        ...
-
-    def route(self, schedule):
-        ...
-
-    def ping(self):
-        ...
+    def deregister():
+        try:
+            self.rpcclient.deregister()
+        except rpcclient.ClockNodeRpcClient.ConnectionError:
+            logger.warning('Failed to communicate with clocknode {self}.')
+        self.is_disabled = self.is_deleted = True
+        self.save()
 
 
 class MinuteHandClockNode(ClockNode):
@@ -91,26 +73,6 @@ class MinuteHandClockNode(ClockNode):
     @classmethod
     def select_node(cls, schedule):
         ...
-
-    @classmethod
-    def populate(cls, director):
-        for minute in range(0, 1439):
-            if minute == 0:
-                hour = 0
-            else:
-                hour = minute / 60
-
-            cls.objects.create(
-                minute_id=minute + 1,
-                minute=minute,
-                director=director,
-                hour=hour,
-                hour_id=hour + 1,
-            )
-
-    def un_register(self):
-        self.rpc.disable()
-        self.delete()
 
     @classmethod
     def from_registration_request(cls, registration_request):
@@ -125,23 +87,6 @@ class MinuteHandClockNode(ClockNode):
             hour_id=hour + 1,
         )
 
-    def un_register(self):
-        self.rpc.disable()
-
-    def route(self, schedule):
-        ...
-
-    def ping(self):
-        ...
-
-
-class HourHandClockNode(ClockNode):
-    hour = models.IntegerField()
-    hour_id = models.IntegerField()
-
-    @classmethod
-    def select_node(cls, schedule):
-        ...
 
     def route(self, schedule):
         ...
@@ -188,3 +133,4 @@ class CronSchedule(Schedule):
     timezone = models.CharField(max_length=255, null=True)
     jitter = models.IntegerField(null=True)
     type = models.IntegerField(null=True)
+    misfire_grace_time = models.IntegerField(null=True)
