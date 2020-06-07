@@ -7,7 +7,14 @@ from django.db import models
 
 
 class Director(models.Model):
-    class PartitionStrategy(enum.Enum):
+
+    class Space(models.TextChoices):
+        HOUR = 'HOUR'
+        DAY = 'DAY'
+
+    DEFAULT_SPACE = SPACE.HOUR
+
+    class PartitionStrategy(models.TextChoices):
         ROUND_ROBIN = "ROUND_ROBIN"
         MINUTE_HAND = "MINUTE_HAND"
         HOUR_HAND = "HOUR_HAND"
