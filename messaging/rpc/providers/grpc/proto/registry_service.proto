@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "messages.proto";
+
+package messaging.rpc.providers.grpc.proto.registry_service;
+
+service RegistryService {
+    rpc register_clock_node(RegisterClockNodeRequest) returns (RegisterClockNodeResponse);
+}
+
+

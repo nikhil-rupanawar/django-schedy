@@ -1,3 +1,4 @@
+import os
 import enum
 from uuid import uuid4
 from django.db import models
@@ -12,6 +13,8 @@ class Director(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
     registery_service_uri = models.CharField(max_length=255)
+    clocknode_event_service_uri = models.CharField(max_length=255)
+    schedule_event_service_uri = models.CharField(max_length=255)
     minute_space_size = models.IntegerField()
 
     def register_clock_node(self, clocknode):
@@ -28,6 +31,28 @@ class Director(models.Model):
 
     def configure(self, config):
         ...
+
+    @classmethod
+    def initialize(cls):
+        if cls.objects.first():
+            return
+
+        cls.objects.create(
+            name='test',
+            registery_service_uri=os.environ.get(
+                'SCHEDULER_DIRECTOR_REGISTERY_SERVICE_URI',
+                'grpc://localhost:50000'
+            ),
+            clocknode_event_service_uri=os.environ.get(
+                'SCHEDULER_DIRECTOR_CLOCKNODE_EVENT_SERVICE_URI',
+                'grpc://localhost:50001'
+            ),
+            schedule_event_service_uri=os.environ.get(
+                'SCHEDULE_TARGET_URI',
+                'amqp://guest@localhost:5672/default_schedule_target_topic'
+            ),
+            minute_space_size=int(os.environ.get('MINUTE_SPACE_SIZE', 1)),
+       )
 
 
 class ClockNode(models.Model):
@@ -66,9 +91,6 @@ class ClockNode(models.Model):
 
 class MinuteHandClockNode(ClockNode):
     minute = models.IntegerField()
-    minute_id = models.IntegerField()
-    hour = models.IntegerField()
-    hour_id = models.IntegerField()
 
     @classmethod
     def select_node(cls, schedule):
@@ -99,18 +121,6 @@ class Schedule(models.Model):
     class TriggerType(models.TextChoices):
         CRON = "CRON"
 
-    name = models.CharField(max_length=500)
-    description = models.TextField()
-    trigger_type = models.CharField(
-        max_length=50, choices=TriggerType.choices, default=TriggerType.CRON,
-    )
-    create = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now_add=True)
-    create_by = models.CharField(max_length=255)
-    clocknode = models.ForeignKey(ClockNode, on_delete=models.SET_NULL, null=True)
-
-
-class CronSchedule(Schedule):
     class Type(enum.IntEnum):
         MINUTELY = 1
         HOURLY = 2
@@ -120,6 +130,22 @@ class CronSchedule(Schedule):
         YEARLY = 6
         ONCE = 7
 
+    name = models.CharField(max_length=500)
+    description = models.TextField()
+    trigger_type = models.CharField(
+        max_length=50,
+        choices=TriggerType.choices,
+        default=TriggerType.CRON,
+    )
+    create = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now_add=True)
+    create_by = models.CharField(max_length=255)
+    clocknode = models.ForeignKey(ClockNode, on_delete=models.SET_NULL, null=True)
+    misfire_grace_time = models.IntegerField(null=True)
+    type = models.IntegerField(null=True)
+
+
+class CronSchedule(Schedule):
     second = models.CharField(max_length=255, null=True)
     minute = models.CharField(max_length=255, null=True)
     hour = models.CharField(max_length=255, null=True)
@@ -132,5 +158,7 @@ class CronSchedule(Schedule):
     end_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     timezone = models.CharField(max_length=255, null=True)
     jitter = models.IntegerField(null=True)
-    type = models.IntegerField(null=True)
-    misfire_grace_time = models.IntegerField(null=True)
+
+    def to_dict(self):
+        d = self.__dict__.copy()
+

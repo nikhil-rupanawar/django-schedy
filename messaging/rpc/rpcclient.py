@@ -1,27 +1,28 @@
 import urllib
 
+
 class ClockNodeRpcClient:
+    """ Mixin for clock node rpc clients """
+
     def __init__(self, uri):
-        return ClockNodeRpcClientFactory.get_client(uri)
+        return self._get_client(uri)
 
-    def add_schedule(self, add_schedule_request):
+    def add_schedule(self, request):
         raise NotImplementedError()
 
-    def remove_schedule(self, remove_schedule_request):
+    def remove_schedule(self, request):
         raise NotImplementedError()
 
-    def heartbeat(self):
+    def replace_schedules(self, request):
         raise NotImplementedError()
 
-    def stats(self, stats_request):
+    def health_ping(self, request):
         raise NotImplementedError()
 
-
-class ClockNodeRpcClientFactory:
     @classmethod
-    def get_client(cls, uri):
+    def _get_client(cls, uri):
         uriparsed = urllib.parse.urlparse(uri)
-        from messaging.rpc.providers.grpc import ClockNodeGrpcClient
+        from messaging.rpc.providers.grpc.clients import ClockNodeGrpcClient
         if uriparsed.startswith('grpc://'):
             return GrpcClockNodeClient(uri)
         else:

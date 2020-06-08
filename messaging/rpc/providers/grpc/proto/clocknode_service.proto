@@ -1,0 +1,12 @@
+syntax = "proto3";
+import "messages.proto";
+
+package messaging.rpc.providers.grpc.proto.clocknode;
+
+service ClockNodeService {
+    rpc add_schedule(AddScheduleRequest) returns (AddScheduleResponse);
+    rpc remove_schedule(RemoveScheduleRequest) returns (RemoveScheduleResponse);
+    rpc replace_schedules(ReplaceSchedulesRequest) returns (ReplaceSchedulesResponse);
+    rpc health_ping(HealthPingRequest) returns (HealthPingResponse);
+}
+
