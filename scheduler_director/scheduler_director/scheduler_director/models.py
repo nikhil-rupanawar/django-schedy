@@ -1,13 +1,33 @@
 import os
 import enum
-from uuid import uuid4
+import datetime
+from uuid import uuid4, UUID
 from django.db import models
+from django_model_to_dict.mixins import ToDictMixin
+from common.util import DictModel
 
 # Create your models here.
 from django.db import models
 
 
-class Director(models.Model):
+class ToMessageMixin(ToDictMixin):
+    to_message_fields = set()
+    to_message_fields_exclude = set()
+
+    def to_message(self):
+        value_dict = DictModel(**super().to_dict())
+        msg = {}
+        for k, v in value_dict.items():
+            if self.to_message_fields != '*' and (k not in self.to_message_fields or k in to_message_fields_exclude):
+                continue
+            elif isinstance(v, (datetime.datetime, UUID)):
+                msg[k] = str(v)
+            else:
+                msg[k] = v
+        return msg
+
+
+class Director(models.Model, ToMessageMixin):
     uuid = models.UUIDField(default=uuid4)
     name = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True)
@@ -16,6 +36,8 @@ class Director(models.Model):
     clocknode_event_service_uri = models.CharField(max_length=255)
     schedule_event_service_uri = models.CharField(max_length=255)
     minute_space_size = models.IntegerField()
+    
+    to_message_fields = {'uuid', 'registery_service_uri', 'schedule_event_service_uri'}
 
     def register_clock_node(self, clocknode):
         return clocknode.save()
@@ -55,18 +77,19 @@ class Director(models.Model):
        )
 
 
-class ClockNode(models.Model):
+class ClockNode(models.Model, ToMessageMixin):
+    uuid = models.UUIDField(unique=True)
     uri = models.CharField(max_length=255)
-    last_seen = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    last_used = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     schedule_count = models.IntegerField(null=True)
     max_schedule_count = models.IntegerField(null=True)
+    reschdule_on_registration = models.BooleanField(default=True)
+    is_disabled = models.BooleanField(null=True, default=False)
+    is_deleted = models.BooleanField(null=True, default=False)
+    last_seen = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    last_used = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    registered_on = models.DateTimeField(auto_now_add=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
-    registered_on = models.DateTimeField(auto_now_add=True)
-    reschdule_on_registration = models.BooleanField(default=True)
-    is_disabled = models.BooleanField(null=True)
-    is_deleted = models.BooleanField(null=True)
     director = models.ForeignKey(Director, on_delete=models.SET_NULL, null=True)
 
     @classmethod
@@ -98,15 +121,11 @@ class MinuteHandClockNode(ClockNode):
 
     @classmethod
     def from_registration_request(cls, registration_request):
-        if registration_request.body.minute == 0:
-            hour = 0
-        else:
-            hour = registration_request.body.minute / 60
         return cls(
-            minute_id=registration_request.body.minute + 1,
-            minute=registration_request.body.minute,
-            hour=hour,
-            hour_id=hour + 1,
+            minute=registration_request.minute,
+            uri=registration_request.uri,
+            last_seen=datetime.datetime.now(),
+            max_schedule_count=registration_request.max_schedule_count,
         )
 
 
@@ -117,7 +136,9 @@ class MinuteHandClockNode(ClockNode):
         ...
 
 
-class Schedule(models.Model):
+class Schedule(models.Model, ToMessageMixin):
+    to_message_exclude_fields = {'created', 'updated', 'clocknode'}
+
     class TriggerType(models.TextChoices):
         CRON = "CRON"
 
@@ -161,4 +182,7 @@ class CronSchedule(Schedule):
 
     def to_dict(self):
         d = self.__dict__.copy()
+
+    def to_message(self):
+        return DictModel(self.to_dict())
 

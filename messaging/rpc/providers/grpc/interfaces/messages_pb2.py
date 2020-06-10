@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='messaging.rpc.providers.grpc.proto',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x0emessages.proto\x12\"messaging.rpc.providers.grpc.proto\"\x19\n\nNodeHeader\x12\x0b\n\x03uri\x18\x01 \x01(\t\"\x97\x01\n\x08Schedule\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x14\n\x0ctrigger_type\x18\x03 \x01(\t\x12\x0c\n\x04type\x18\x04 \x01(\x05\x12M\n\x10schedule_details\x18\x05 \x01(\x0b\x32\x33.messaging.rpc.providers.grpc.proto.ScheduleDetails\"\x9c\x01\n\x0fScheduleDetails\x12\x0e\n\x06second\x18\x01 \x01(\t\x12\x0e\n\x06minute\x18\x02 \x01(\t\x12\x0c\n\x04hour\x18\x03 \x01(\t\x12\x0b\n\x03\x64\x61y\x18\x04 \x01(\t\x12\x13\n\x0b\x64\x61y_of_weel\x18\x05 \x01(\t\x12\x0c\n\x04week\x18\x06 \x01(\t\x12\r\n\x05month\x18\x07 \x01(\t\x12\x0c\n\x04year\x18\x08 \x01(\t\x12\x0e\n\x06jitter\x18\t \x01(\x05\"\xa0\x01\n\x15\x43lockNodeCapabilities\x12\x1a\n\x12max_schedule_count\x18\x01 \x01(\x05\x12\x1f\n\x17max_threadpool_executor\x18\x02 \x01(\x05\x12\x19\n\x11number_of_workers\x18\x03 \x01(\x05\x12\x1a\n\x12thread_per_workers\x18\x04 \x01(\x05\x12\x13\n\x0bticker_type\x18\x05 \x01(\t\"q\n\x0e\x43lockNodeState\x12\x13\n\x0bis_disabled\x18\x01 \x01(\x08\x12\x1e\n\x16\x63urrent_schedule_count\x18\x02 \x01(\x05\x12\x16\n\x0elast_boot_time\x18\x03 \x01(\t\x12\x12\n\nis_healthy\x18\x04 \x01(\x08\"\xdf\x01\n\tClockNode\x12>\n\x06header\x18\x01 \x01(\x0b\x32..messaging.rpc.providers.grpc.proto.NodeHeader\x12O\n\x0c\x63\x61pabilities\x18\x02 \x01(\x0b\x32\x39.messaging.rpc.providers.grpc.proto.ClockNodeCapabilities\x12\x41\n\x05state\x18\x03 \x01(\x0b\x32\x32.messaging.rpc.providers.grpc.proto.ClockNodeState\"S\n\x11HealthPingRequest\x12>\n\x06header\x18\x01 \x01(\x0b\x32..messaging.rpc.providers.grpc.proto.NodeHeader\"\x14\n\x12HealthPingResponse\"\x94\x01\n\x12\x41\x64\x64ScheduleRequest\x12>\n\x06header\x18\x01 \x01(\x0b\x32..messaging.rpc.providers.grpc.proto.NodeHeader\x12>\n\x08schedule\x18\x02 \x01(\x0b\x32,.messaging.rpc.providers.grpc.proto.Schedule\"\x15\n\x13\x41\x64\x64ScheduleResponse\"c\n\x15RemoveScheduleRequest\x12>\n\x06header\x18\x01 \x01(\x0b\x32..messaging.rpc.providers.grpc.proto.NodeHeader\x12\n\n\x02id\x18\x02 \x01(\t\"\x18\n\x16RemoveScheduleResponse\"\x9a\x01\n\x17ReplaceSchedulesRequest\x12>\n\x06header\x18\x01 \x01(\x0b\x32..messaging.rpc.providers.grpc.proto.NodeHeader\x12?\n\tschedules\x18\x02 \x03(\x0b\x32,.messaging.rpc.providers.grpc.proto.Schedule\"\x1a\n\x18ReplaceSchedulesResponse\"\xbb\x01\n\x18RegisterClockNodeRequest\x12>\n\x06header\x18\x01 \x01(\x0b\x32..messaging.rpc.providers.grpc.proto.NodeHeader\x12;\n\x04node\x18\x02 \x01(\x0b\x32-.messaging.rpc.providers.grpc.proto.ClockNode\x12\"\n\x1areschedule_on_registration\x18\x03 \x01(\x08\"\x1b\n\x19RegisterClockNodeResponseb\x06proto3'
+  serialized_pb=b'\n\x0emessages.proto\x12\"messaging.rpc.providers.grpc.proto\"\x19\n\nNodeHeader\x12\x0b\n\x03uri\x18\x01 \x01(\t\"\x94\x01\n\x08Schedule\x12\n\n\x02id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x14\n\x0ctrigger_type\x18\x03 \x01(\t\x12\x0c\n\x04type\x18\x04 \x01(\x05\x12J\n\x10schedule_details\x18\x05 \x01(\x0b\x32\x30.messaging.rpc.providers.grpc.proto.CronSchedule\"\x99\x01\n\x0c\x43ronSchedule\x12\x0e\n\x06second\x18\x01 \x01(\t\x12\x0e\n\x06minute\x18\x02 \x01(\t\x12\x0c\n\x04hour\x18\x03 \x01(\t\x12\x0b\n\x03\x64\x61y\x18\x04 \x01(\t\x12\x13\n\x0b\x64\x61y_of_week\x18\x05 \x01(\t\x12\x0c\n\x04week\x18\x06 \x01(\t\x12\r\n\x05month\x18\x07 \x01(\t\x12\x0c\n\x04year\x18\x08 \x01(\t\x12\x0e\n\x06jitter\x18\t \x01(\x05\"R\n\tClockNode\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x0b\n\x03uri\x18\x02 \x01(\t\x12\x0e\n\x06minute\x18\x03 \x01(\x05\x12\x1a\n\x12max_schedule_count\x18\x04 \x01(\x05\"\x13\n\x11HealthPingRequest\"\x14\n\x12HealthPingResponse\"T\n\x12\x41\x64\x64ScheduleRequest\x12>\n\x08schedule\x18\x02 \x01(\x0b\x32,.messaging.rpc.providers.grpc.proto.Schedule\"\x15\n\x13\x41\x64\x64ScheduleResponse\"%\n\x15RemoveScheduleRequest\x12\x0c\n\x04uuid\x18\x01 \x01(\t\"\x18\n\x16RemoveScheduleResponse\"Z\n\x17ReplaceSchedulesRequest\x12?\n\tschedules\x18\x01 \x03(\x0b\x32,.messaging.rpc.providers.grpc.proto.Schedule\"\x1a\n\x18ReplaceSchedulesResponse\"{\n\x18RegisterClockNodeRequest\x12;\n\x04node\x18\x01 \x01(\x0b\x32-.messaging.rpc.providers.grpc.proto.ClockNode\x12\"\n\x1areschedule_on_registration\x18\x02 \x01(\x08\"\x1b\n\x19RegisterClockNodeResponseb\x06proto3'
 )
 
 
@@ -110,75 +110,75 @@ _SCHEDULE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=82,
-  serialized_end=233,
+  serialized_end=230,
 )
 
 
-_SCHEDULEDETAILS = _descriptor.Descriptor(
-  name='ScheduleDetails',
-  full_name='messaging.rpc.providers.grpc.proto.ScheduleDetails',
+_CRONSCHEDULE = _descriptor.Descriptor(
+  name='CronSchedule',
+  full_name='messaging.rpc.providers.grpc.proto.CronSchedule',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='second', full_name='messaging.rpc.providers.grpc.proto.ScheduleDetails.second', index=0,
+      name='second', full_name='messaging.rpc.providers.grpc.proto.CronSchedule.second', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='minute', full_name='messaging.rpc.providers.grpc.proto.ScheduleDetails.minute', index=1,
+      name='minute', full_name='messaging.rpc.providers.grpc.proto.CronSchedule.minute', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='hour', full_name='messaging.rpc.providers.grpc.proto.ScheduleDetails.hour', index=2,
+      name='hour', full_name='messaging.rpc.providers.grpc.proto.CronSchedule.hour', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='day', full_name='messaging.rpc.providers.grpc.proto.ScheduleDetails.day', index=3,
+      name='day', full_name='messaging.rpc.providers.grpc.proto.CronSchedule.day', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='day_of_weel', full_name='messaging.rpc.providers.grpc.proto.ScheduleDetails.day_of_weel', index=4,
+      name='day_of_week', full_name='messaging.rpc.providers.grpc.proto.CronSchedule.day_of_week', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='week', full_name='messaging.rpc.providers.grpc.proto.ScheduleDetails.week', index=5,
+      name='week', full_name='messaging.rpc.providers.grpc.proto.CronSchedule.week', index=5,
       number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='month', full_name='messaging.rpc.providers.grpc.proto.ScheduleDetails.month', index=6,
+      name='month', full_name='messaging.rpc.providers.grpc.proto.CronSchedule.month', index=6,
       number=7, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='year', full_name='messaging.rpc.providers.grpc.proto.ScheduleDetails.year', index=7,
+      name='year', full_name='messaging.rpc.providers.grpc.proto.CronSchedule.year', index=7,
       number=8, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='jitter', full_name='messaging.rpc.providers.grpc.proto.ScheduleDetails.jitter', index=8,
+      name='jitter', full_name='messaging.rpc.providers.grpc.proto.CronSchedule.jitter', index=8,
       number=9, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -196,119 +196,8 @@ _SCHEDULEDETAILS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=236,
-  serialized_end=392,
-)
-
-
-_CLOCKNODECAPABILITIES = _descriptor.Descriptor(
-  name='ClockNodeCapabilities',
-  full_name='messaging.rpc.providers.grpc.proto.ClockNodeCapabilities',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='max_schedule_count', full_name='messaging.rpc.providers.grpc.proto.ClockNodeCapabilities.max_schedule_count', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='max_threadpool_executor', full_name='messaging.rpc.providers.grpc.proto.ClockNodeCapabilities.max_threadpool_executor', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='number_of_workers', full_name='messaging.rpc.providers.grpc.proto.ClockNodeCapabilities.number_of_workers', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='thread_per_workers', full_name='messaging.rpc.providers.grpc.proto.ClockNodeCapabilities.thread_per_workers', index=3,
-      number=4, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='ticker_type', full_name='messaging.rpc.providers.grpc.proto.ClockNodeCapabilities.ticker_type', index=4,
-      number=5, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=395,
-  serialized_end=555,
-)
-
-
-_CLOCKNODESTATE = _descriptor.Descriptor(
-  name='ClockNodeState',
-  full_name='messaging.rpc.providers.grpc.proto.ClockNodeState',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='is_disabled', full_name='messaging.rpc.providers.grpc.proto.ClockNodeState.is_disabled', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='current_schedule_count', full_name='messaging.rpc.providers.grpc.proto.ClockNodeState.current_schedule_count', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='last_boot_time', full_name='messaging.rpc.providers.grpc.proto.ClockNodeState.last_boot_time', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='is_healthy', full_name='messaging.rpc.providers.grpc.proto.ClockNodeState.is_healthy', index=3,
-      number=4, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=557,
-  serialized_end=670,
+  serialized_start=233,
+  serialized_end=386,
 )
 
 
@@ -320,23 +209,30 @@ _CLOCKNODE = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='header', full_name='messaging.rpc.providers.grpc.proto.ClockNode.header', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      name='uuid', full_name='messaging.rpc.providers.grpc.proto.ClockNode.uuid', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='capabilities', full_name='messaging.rpc.providers.grpc.proto.ClockNode.capabilities', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      name='uri', full_name='messaging.rpc.providers.grpc.proto.ClockNode.uri', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='state', full_name='messaging.rpc.providers.grpc.proto.ClockNode.state', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      name='minute', full_name='messaging.rpc.providers.grpc.proto.ClockNode.minute', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='max_schedule_count', full_name='messaging.rpc.providers.grpc.proto.ClockNode.max_schedule_count', index=3,
+      number=4, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -352,8 +248,8 @@ _CLOCKNODE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=673,
-  serialized_end=896,
+  serialized_start=388,
+  serialized_end=470,
 )
 
 
@@ -364,13 +260,6 @@ _HEALTHPINGREQUEST = _descriptor.Descriptor(
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
-    _descriptor.FieldDescriptor(
-      name='header', full_name='messaging.rpc.providers.grpc.proto.HealthPingRequest.header', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -383,8 +272,8 @@ _HEALTHPINGREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=898,
-  serialized_end=981,
+  serialized_start=472,
+  serialized_end=491,
 )
 
 
@@ -407,8 +296,8 @@ _HEALTHPINGRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=983,
-  serialized_end=1003,
+  serialized_start=493,
+  serialized_end=513,
 )
 
 
@@ -420,14 +309,7 @@ _ADDSCHEDULEREQUEST = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='header', full_name='messaging.rpc.providers.grpc.proto.AddScheduleRequest.header', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='schedule', full_name='messaging.rpc.providers.grpc.proto.AddScheduleRequest.schedule', index=1,
+      name='schedule', full_name='messaging.rpc.providers.grpc.proto.AddScheduleRequest.schedule', index=0,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -445,8 +327,8 @@ _ADDSCHEDULEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1006,
-  serialized_end=1154,
+  serialized_start=515,
+  serialized_end=599,
 )
 
 
@@ -469,8 +351,8 @@ _ADDSCHEDULERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1156,
-  serialized_end=1177,
+  serialized_start=601,
+  serialized_end=622,
 )
 
 
@@ -482,15 +364,8 @@ _REMOVESCHEDULEREQUEST = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='header', full_name='messaging.rpc.providers.grpc.proto.RemoveScheduleRequest.header', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='id', full_name='messaging.rpc.providers.grpc.proto.RemoveScheduleRequest.id', index=1,
-      number=2, type=9, cpp_type=9, label=1,
+      name='uuid', full_name='messaging.rpc.providers.grpc.proto.RemoveScheduleRequest.uuid', index=0,
+      number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -507,8 +382,8 @@ _REMOVESCHEDULEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1179,
-  serialized_end=1278,
+  serialized_start=624,
+  serialized_end=661,
 )
 
 
@@ -531,8 +406,8 @@ _REMOVESCHEDULERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1280,
-  serialized_end=1304,
+  serialized_start=663,
+  serialized_end=687,
 )
 
 
@@ -544,15 +419,8 @@ _REPLACESCHEDULESREQUEST = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='header', full_name='messaging.rpc.providers.grpc.proto.ReplaceSchedulesRequest.header', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='schedules', full_name='messaging.rpc.providers.grpc.proto.ReplaceSchedulesRequest.schedules', index=1,
-      number=2, type=11, cpp_type=10, label=3,
+      name='schedules', full_name='messaging.rpc.providers.grpc.proto.ReplaceSchedulesRequest.schedules', index=0,
+      number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -569,8 +437,8 @@ _REPLACESCHEDULESREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1307,
-  serialized_end=1461,
+  serialized_start=689,
+  serialized_end=779,
 )
 
 
@@ -593,8 +461,8 @@ _REPLACESCHEDULESRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1463,
-  serialized_end=1489,
+  serialized_start=781,
+  serialized_end=807,
 )
 
 
@@ -606,22 +474,15 @@ _REGISTERCLOCKNODEREQUEST = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='header', full_name='messaging.rpc.providers.grpc.proto.RegisterClockNodeRequest.header', index=0,
+      name='node', full_name='messaging.rpc.providers.grpc.proto.RegisterClockNodeRequest.node', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='node', full_name='messaging.rpc.providers.grpc.proto.RegisterClockNodeRequest.node', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='reschedule_on_registration', full_name='messaging.rpc.providers.grpc.proto.RegisterClockNodeRequest.reschedule_on_registration', index=2,
-      number=3, type=8, cpp_type=7, label=1,
+      name='reschedule_on_registration', full_name='messaging.rpc.providers.grpc.proto.RegisterClockNodeRequest.reschedule_on_registration', index=1,
+      number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -638,8 +499,8 @@ _REGISTERCLOCKNODEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1492,
-  serialized_end=1679,
+  serialized_start=809,
+  serialized_end=932,
 )
 
 
@@ -662,27 +523,17 @@ _REGISTERCLOCKNODERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1681,
-  serialized_end=1708,
+  serialized_start=934,
+  serialized_end=961,
 )
 
-_SCHEDULE.fields_by_name['schedule_details'].message_type = _SCHEDULEDETAILS
-_CLOCKNODE.fields_by_name['header'].message_type = _NODEHEADER
-_CLOCKNODE.fields_by_name['capabilities'].message_type = _CLOCKNODECAPABILITIES
-_CLOCKNODE.fields_by_name['state'].message_type = _CLOCKNODESTATE
-_HEALTHPINGREQUEST.fields_by_name['header'].message_type = _NODEHEADER
-_ADDSCHEDULEREQUEST.fields_by_name['header'].message_type = _NODEHEADER
+_SCHEDULE.fields_by_name['schedule_details'].message_type = _CRONSCHEDULE
 _ADDSCHEDULEREQUEST.fields_by_name['schedule'].message_type = _SCHEDULE
-_REMOVESCHEDULEREQUEST.fields_by_name['header'].message_type = _NODEHEADER
-_REPLACESCHEDULESREQUEST.fields_by_name['header'].message_type = _NODEHEADER
 _REPLACESCHEDULESREQUEST.fields_by_name['schedules'].message_type = _SCHEDULE
-_REGISTERCLOCKNODEREQUEST.fields_by_name['header'].message_type = _NODEHEADER
 _REGISTERCLOCKNODEREQUEST.fields_by_name['node'].message_type = _CLOCKNODE
 DESCRIPTOR.message_types_by_name['NodeHeader'] = _NODEHEADER
 DESCRIPTOR.message_types_by_name['Schedule'] = _SCHEDULE
-DESCRIPTOR.message_types_by_name['ScheduleDetails'] = _SCHEDULEDETAILS
-DESCRIPTOR.message_types_by_name['ClockNodeCapabilities'] = _CLOCKNODECAPABILITIES
-DESCRIPTOR.message_types_by_name['ClockNodeState'] = _CLOCKNODESTATE
+DESCRIPTOR.message_types_by_name['CronSchedule'] = _CRONSCHEDULE
 DESCRIPTOR.message_types_by_name['ClockNode'] = _CLOCKNODE
 DESCRIPTOR.message_types_by_name['HealthPingRequest'] = _HEALTHPINGREQUEST
 DESCRIPTOR.message_types_by_name['HealthPingResponse'] = _HEALTHPINGRESPONSE
@@ -710,26 +561,12 @@ Schedule = _reflection.GeneratedProtocolMessageType('Schedule', (_message.Messag
   })
 _sym_db.RegisterMessage(Schedule)
 
-ScheduleDetails = _reflection.GeneratedProtocolMessageType('ScheduleDetails', (_message.Message,), {
-  'DESCRIPTOR' : _SCHEDULEDETAILS,
+CronSchedule = _reflection.GeneratedProtocolMessageType('CronSchedule', (_message.Message,), {
+  'DESCRIPTOR' : _CRONSCHEDULE,
   '__module__' : 'messages_pb2'
-  # @@protoc_insertion_point(class_scope:messaging.rpc.providers.grpc.proto.ScheduleDetails)
+  # @@protoc_insertion_point(class_scope:messaging.rpc.providers.grpc.proto.CronSchedule)
   })
-_sym_db.RegisterMessage(ScheduleDetails)
-
-ClockNodeCapabilities = _reflection.GeneratedProtocolMessageType('ClockNodeCapabilities', (_message.Message,), {
-  'DESCRIPTOR' : _CLOCKNODECAPABILITIES,
-  '__module__' : 'messages_pb2'
-  # @@protoc_insertion_point(class_scope:messaging.rpc.providers.grpc.proto.ClockNodeCapabilities)
-  })
-_sym_db.RegisterMessage(ClockNodeCapabilities)
-
-ClockNodeState = _reflection.GeneratedProtocolMessageType('ClockNodeState', (_message.Message,), {
-  'DESCRIPTOR' : _CLOCKNODESTATE,
-  '__module__' : 'messages_pb2'
-  # @@protoc_insertion_point(class_scope:messaging.rpc.providers.grpc.proto.ClockNodeState)
-  })
-_sym_db.RegisterMessage(ClockNodeState)
+_sym_db.RegisterMessage(CronSchedule)
 
 ClockNode = _reflection.GeneratedProtocolMessageType('ClockNode', (_message.Message,), {
   'DESCRIPTOR' : _CLOCKNODE,

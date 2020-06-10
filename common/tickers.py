@@ -3,28 +3,6 @@ from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
-class BaseRpcServerMixin:
-
-    @property
-    def server_config(self):
-        raise NotImplementedError
-
-    def start(self):
-        raise NotImplementedError()
-
-    def init(self):
-        raise NotImplementedError()
-
-    def stop(self):
-        raise NotImplementedError()
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args, **kwargs):
-        pass
-
-
 class InMemoryApSchedulerTickerMixin:
 
     @property
@@ -45,7 +23,9 @@ class InMemoryApSchedulerTickerMixin:
             executors={'default': ThreadPoolExecutor(config['max_executors'])},
             job_defaults={'misfire_grace_time': config['misfire_grace_time']}
         )
- 
+
     def start_ticker(self):
         self.ticker.start()
 
+    def stop_ticket(self):
+        self.ticker.stop()

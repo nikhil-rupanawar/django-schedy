@@ -1,25 +1,27 @@
 syntax = "proto3";
 package messaging.rpc.providers.grpc.proto;
 
+
 message NodeHeader {
     string uri = 1;
 }
+
 
 message Schedule {
     string id = 1;
     string name = 2;
     string trigger_type = 3;
     int32 type = 4;
-    ScheduleDetails schedule_details = 5;
+    CronSchedule schedule_details = 5;
 }
 
 
-message ScheduleDetails {
+message CronSchedule {
     string second = 1;
     string minute = 2;
     string hour = 3;
     string day = 4;
-    string day_of_weel = 5; 
+    string day_of_week = 5; 
     string week = 6;
     string month = 7;
     string year = 8;
@@ -27,42 +29,21 @@ message ScheduleDetails {
 }
 
 
-message ClockNodeCapabilities {
-    int32 max_schedule_count = 1;
-    int32 max_threadpool_executor = 2;
-    int32 number_of_workers = 3;
-    int32 thread_per_workers = 4;
-    string ticker_type = 5;
-}
-
-
-message ClockNodeState {
-    bool is_disabled = 1;
-    int32 current_schedule_count = 2;
-    string last_boot_time = 3;
-    bool is_healthy = 4;
-}
-
-
-
 message ClockNode {
-    NodeHeader header = 1;
-    ClockNodeCapabilities capabilities = 2;
-    ClockNodeState state = 3;
+    string uuid = 1;
+    string uri = 2;
+    int32 minute = 3;
+    int32 max_schedule_count = 4;
 }
 
 
 // Request response message
-message HealthPingRequest {
-   NodeHeader header = 1;
-};
-
+message HealthPingRequest {};
 
 message HealthPingResponse {};
 
 
 message AddScheduleRequest {
-    NodeHeader header = 1;
     Schedule schedule = 2;
 }
 
@@ -71,8 +52,7 @@ message AddScheduleResponse {}
 
 
 message RemoveScheduleRequest {
-    NodeHeader header = 1;
-    string id = 2;
+    string uuid = 1;
 }
 
 
@@ -81,8 +61,7 @@ message RemoveScheduleResponse {
 
 
 message ReplaceSchedulesRequest {
-    NodeHeader header = 1;
-    repeated Schedule schedules = 2;
+    repeated Schedule schedules = 1;
 }
 
 
@@ -90,10 +69,8 @@ message ReplaceSchedulesResponse {}
 
 
 message RegisterClockNodeRequest {
-    NodeHeader header = 1;
-    ClockNode node = 2;
-    bool reschedule_on_registration = 3;
-
+    ClockNode node = 1;
+    bool reschedule_on_registration = 2;
 }
 
 

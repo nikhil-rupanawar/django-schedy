@@ -6,10 +6,17 @@ import django
 from django.conf import settings
 from concurrent import futures
 from functools import partial
+
+from messaging.rpc.contracts import RegistryServiceContract
+from messaging.rpc.rpcserver import BaseRpcServerMixin
+
 from messaging.rpc.providers.grpc.interfaces.messages_pb2 import (
     RegisterClockNodeResponse
 )
-from messaging.rpc.providers.grpc.interfaces.registry_service_pb2_grpc import RegistryServiceServicer, add_RegistryServiceServicer_to_server
+from messaging.rpc.providers.grpc.interfaces.registry_service_pb2_grpc import (
+    RegistryServiceServicer,
+    add_RegistryServiceServicer_to_server
+)
 
 from scheduler_director.scheduler_director import models
 
@@ -17,7 +24,10 @@ from scheduler_director.scheduler_director import models
 logger = logging.getLogger(__name__)
 
 
-class RegistryServer(RegistryServiceServicer):
+class RegistryServer(
+        RegistryServiceServicer,
+        BaseRpcServerMixin,
+    ):
 
     @property
     def server_config(self):

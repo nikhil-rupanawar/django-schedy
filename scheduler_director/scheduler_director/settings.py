@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "graphene_django",
     "scheduler_director.scheduler_director",
+    'polymorphic',
 ]
 
 MIDDLEWARE = [

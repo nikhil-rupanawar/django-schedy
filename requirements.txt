@@ -14,8 +14,11 @@ command-not-found==0.3
 cryptography==2.1.4
 cupshelpers==1.0
 defer==1.0.6
+dict-to-protobuf==0.0.3.9
 distro-info===0.18ubuntu0.18.04.1
 Django==3.0.7
+django-model-to-dict==0.2.1
+django-polymorphic==2.1.2
 graphene==2.1.8
 graphene-django==2.10.1
 graphql-core==2.3.2
