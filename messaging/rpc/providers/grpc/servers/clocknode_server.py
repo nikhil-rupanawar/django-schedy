@@ -11,7 +11,6 @@ from messaging.rpc.providers.grpc.interfaces.messages_pb2 import (
     AddScheduleResponse,
     RemoveScheduleResponse,
     HealthPingResponse,
-    RegisterClockNodeRequest,
 )
 from messaging.rpc.providers.grpc.interfaces.clocknode_service_pb2_grpc import (
     ClockNodeServiceServicer,
@@ -19,7 +18,8 @@ from messaging.rpc.providers.grpc.interfaces.clocknode_service_pb2_grpc import (
 )
 from messaging.rpc.providers.grpc.interfaces.registry_service_pb2_grpc import RegistryServiceStub
 from messaging.rpc.rpcclient import RegistryServiceStub
-from common.tickers import InMemoryApSchedulerTickerMixin
+from messaging import messages
+from common.tickers import Ticker
 
 
 logger = logging.getLogger(__name__)
@@ -29,54 +29,61 @@ class ClockNodeServer(
         ClockNodeServiceServicer,
         ClockNodeContract,
         BaseRpcServerMixin,
-        InMemoryApSchedulerTickerMixin
     ):
+
+    def __init__(self, server_config):
+        ClockNodeServiceServicer.__init__(self)
+        ClockNodeContract.__init__(self)
+        BaseRpcServerMixin.__init__(self)
+        self._server_config = server_config
 
     @property
     def server_config(self):
-        return {
-            'registery_service_uri': os.environ.get(
-                'SCHEDULE_DIRECTOR_REGISTERY_URI',
-                'grpc://localhost:50001'
-            ),
-            'my_uri':  os.environ.get(
-                'DIRECTOR_ACCESS_URI',
-                'grpc://localhost:10000' # tell external world where to communicate
-            ),
-            'port': os.environ.get('PORT', 10000),
-            'network_interface': os.environ.get('NETWORK_INTERFACE', '[::]'),
-            'minute': 0,
-            'uuid': 'c74900b3-2b9d-420a-92db-8f8399e5f85d',
-            'max_schedule_count': 1000,
+        return self._server_config
+    
+    def _init_ticker(self):
+        self._ticker = Ticker(
+            self.server_config.ticker_type,
+            self.server_config.ticker_config
+        )
 
-        }
+    def _start_ticker(self):
+        self._ticker.start()
 
+    def _stop_ticker(self):
+        self._ticker.shutdown(wait=False)
 
     def start(self):
-        self.init_ticker()
-        self.start_ticker()
         self.register_to_director()
+        self._init_ticker()
+        self._start_ticker()
+        self.ack_ready()
         self._start_and_block()
+
+    def ack_ready(self):
+        pass
 
     def register_to_director(self):
         conf = self.server_config
-        registry_service_stub = RegistryServiceStub(conf['registery_service_uri'])
-        request = RegisterClockNodeRequest()
-        registry_service_stub.register_clocknode({
-            'node': {
-                'minute': conf['minute'],
-                'uuid': conf['uuid'],
-                'max_schedule_count': conf['max_schedule_count'],
-                'uri': conf['my_uri'],
-            },
-            'reschedule_on_registration': True,
-        })
+        print(conf)
+        registry_service_stub = RegistryServiceStub(conf.registry_service_uri)
+        registry_service_stub.register_clocknode(
+            messages.M_RegisterClockNodeRequest(
+                 messages.M_ClockNode(
+                    conf.uuid,
+                    conf.uri,
+                    conf.minute,
+                    conf.max_schedule_count,
+                 ),
+                 reschedule_on_registration=True,
+             )
+        )
 
     def _start_and_block(self):
         config = self.server_config
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         add_ClockNodeServiceServicer_to_server(self, server)
-        server.add_insecure_port(f'{config["network_interface"]}:{int(config["port"])}')
+        server.add_insecure_port(f'{config.server_network_interface}:{config.server_network_port}')
         server.start()
         server.wait_for_termination()
 
