@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 import grpc
+import pprint
 from concurrent import futures
 from functools import partial
 from messaging.rpc.contracts import ClockNodeContract
@@ -31,20 +32,20 @@ class ClockNodeServer(
         BaseRpcServerMixin,
     ):
 
-    def __init__(self, server_config):
+    def __init__(self, server_conf):
         ClockNodeServiceServicer.__init__(self)
         ClockNodeContract.__init__(self)
         BaseRpcServerMixin.__init__(self)
-        self._server_config = server_config
+        self._server_conf = server_conf
 
     @property
-    def server_config(self):
-        return self._server_config
+    def server_conf(self):
+        return self._server_conf
     
     def _init_ticker(self):
         self._ticker = Ticker(
-            self.server_config.ticker_type,
-            self.server_config.ticker_config
+            self.server_conf.ticker_type,
+            self.server_conf.ticker_config
         )
 
     def _start_ticker(self):
@@ -54,6 +55,8 @@ class ClockNodeServer(
         self._ticker.shutdown(wait=False)
 
     def start(self):
+        print(f"Starting clock node with following configuration")
+        pprint.pprint(self.server_conf)
         self.register_to_director()
         self._init_ticker()
         self._start_ticker()
@@ -64,26 +67,23 @@ class ClockNodeServer(
         pass
 
     def register_to_director(self):
-        conf = self.server_config
-        print(conf)
-        registry_service_stub = RegistryServiceStub(conf.registry_service_uri)
+        registry_service_stub = RegistryServiceStub(self.server_conf.registry_service_uri)
         registry_service_stub.register_clocknode(
             messages.M_RegisterClockNodeRequest(
                  messages.M_ClockNode(
-                    conf.uuid,
-                    conf.uri,
-                    conf.minute,
-                    conf.max_schedule_count,
+                    self.server_conf.uuid,
+                    self.server_conf.uri,
+                    self.server_conf.minute,
+                    self.server_conf.max_schedule_count,
                  ),
                  reschedule_on_registration=True,
              )
         )
 
     def _start_and_block(self):
-        config = self.server_config
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         add_ClockNodeServiceServicer_to_server(self, server)
-        server.add_insecure_port(f'{config.server_network_interface}:{config.server_network_port}')
+        server.add_insecure_port(f'{self.server_conf.server_network_interface}:{self.server_conf.server_network_port}')
         server.start()
         server.wait_for_termination()
 
@@ -97,9 +97,7 @@ class ClockNodeServer(
         return ReplaceSchedulesResponse()
 
     def add_schedule(self, request, context):
-        logger.info('Adding job {}'.format(request.job_definition.id))
-        self._schedule_job(request.job_definition)
-        return AddScheduleResponse()
+        pass
 
     def remove_schedule(self, request, context):
         self.ticker.remove_job(request.id)

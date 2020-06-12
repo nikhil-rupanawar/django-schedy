@@ -12,6 +12,6 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **kwargs):
-        clocknode_server_config = ClockNodeServerConfig.read_from_env()
+        clocknode_server_config = ClockNodeServerConfig.from_env()
         service = ClockNodeServer(clocknode_server_config)
         service.start()

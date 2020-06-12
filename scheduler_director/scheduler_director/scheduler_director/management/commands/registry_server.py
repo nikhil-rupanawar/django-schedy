@@ -4,6 +4,7 @@ from django.utils.crypto import get_random_string
 
 # TODO Strategy Pattern
 from messaging.rpc.providers.grpc.servers.registry_server import RegistryServer
+from messaging.rpc.server_configs import RegistryServerConfig
 
 
 class Command(BaseCommand):
@@ -14,5 +15,5 @@ class Command(BaseCommand):
         #parser.add_argument('total', type=int, help='Indicates the number of users to be created')
 
     def handle(self, *args, **kwargs):
-        service = RegistryServer()
+        service = RegistryServer(RegistryServerConfig.from_env())
         service.start()

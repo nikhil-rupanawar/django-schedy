@@ -1,8 +1,7 @@
 import urllib
 import grpc
 import functools
-from messaging.rpc.providers.grpc.util import dict_to_protobuf
-
+from messaging.rpc.providers.grpc.util import dict_to_protobuf, protobuf_to_dict
 
 class BaseStubProxy:
     def __init__(self, uri):
@@ -11,15 +10,15 @@ class BaseStubProxy:
         self._stub = self.grpc_stub_cls(self._channel)
 
     @classmethod
-    def marshal(cls, request_cls, response_cls=None):
+    def marshal(cls, request_proto_cls, response_msg_cls):
         def wrapper(f):
             @functools.wraps(f)
             def wrapped(self, msg):
-                request_proto = dict_to_protobuf(msg, request_cls)
-                response = f(self, request_proto)
-                #if response_cls:
-                #    response_msg = protobuf_to_msg(response)
-                return response
+                request_proto = dict_to_protobuf(request_proto_cls, msg)
+                response_proto = response_msg = f(self, request_proto)
+                if response_msg_cls:
+                    response_msg = protobuf_to_dict(response_proto, cls=response_msg_cls)
+                return response_msg
             return wrapped
         return wrapper
 
