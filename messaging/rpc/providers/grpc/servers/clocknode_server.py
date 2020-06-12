@@ -37,6 +37,11 @@ class ClockNodeServer(
         ClockNodeContract.__init__(self)
         BaseRpcServerMixin.__init__(self)
         self._server_conf = server_conf
+        self._registry_service_stub = RegistryServiceStub(self.server_conf.registry_service_uri)
+
+    @property
+    def registry_service_stub(self):
+        return self._registry_service_stub
 
     @property
     def server_conf(self):
@@ -57,18 +62,23 @@ class ClockNodeServer(
     def start(self):
         print(f"Starting clock node with following configuration")
         pprint.pprint(self.server_conf)
-        self.register_to_director()
+        print("Registering to schedule director..")
+        self._register_to_director()
+        print("Starting to tick..")
         self._init_ticker()
         self._start_ticker()
+        print("ACK_READY")
         self.ack_ready()
+
+        print("\n\n====== Wating for first request.. =======")
+
         self._start_and_block()
 
     def ack_ready(self):
         pass
 
-    def register_to_director(self):
-        registry_service_stub = RegistryServiceStub(self.server_conf.registry_service_uri)
-        registry_service_stub.register_clocknode(
+    def _register_to_director(self):
+        self.registry_service_stub.register_clocknode(
             messages.M_RegisterClockNodeRequest(
                  messages.M_ClockNode(
                     self.server_conf.uuid,
