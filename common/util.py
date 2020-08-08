@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class DictModel(dict):
-
     def __init__(self, *args, **kwargs):
         object.__setattr__(self, '__parent', kwargs.pop('__parent', None))
         object.__setattr__(self, '__key', kwargs.pop('__key', None))
@@ -64,10 +63,11 @@ class DictModel(dict):
         return item
 
     def __getattr__(self, name):
+        print("hererer", name)
         prop = getattr(self.__class__, name, None)
         if prop and isinstance(prop, property):
             return prop.__get__(self)
-        return self.__getitem__(name)
+        return self[name]
 
     def __missing__(self, name):
         raise AttributeError(name)

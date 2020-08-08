@@ -10,6 +10,10 @@ from common.util import DictModel
 from django.db import models
 
 
+def now():
+    return datetime.datetime.utcnow()
+
+
 class ToMessageMixin(ToDictMixin):
     to_message_fields = set()
     to_message_fields_exclude = set()
@@ -36,14 +40,28 @@ class Director(models.Model, ToMessageMixin):
     clocknode_event_service_uri = models.CharField(max_length=255)
     schedule_event_service_uri = models.CharField(max_length=255)
     minute_space_size = models.IntegerField()
-    
+ 
+    # Move to meta
     to_message_fields = {'uuid', 'registery_service_uri', 'schedule_event_service_uri'}
 
-    def register_clock_node(self, clocknode):
-        return clocknode.save()
+    @classmethod
+    def register_clocknode(cls, request):
+        print(request.reschedule_on_registration, "hjhjh")
+        print(request.node.max_schedule_count, "hjhjh")
+        print(type(request.node.max_schedule_count), "hjhjh")
+        try:
+            clocknode = ClockNode.objects.get(uuid=request.node.uuid)
+            clocknode.update_from_registration_request(request)
+            clocknode.save()
+            return clocknode
+        except ClockNode.DoesNotExist:
+            clocknode = ClockNode.from_registration_request(request)
+            clocknode.director = cls.objects.first()
+            clocknode.save()
+            return clocknode
 
-    def deregister_clock_node(self, clocknode):
-        clocknode.deregister()
+    def unregister_clocknode(self, request):
+        ...
 
     def route(self, schedule):
         ...
@@ -78,6 +96,9 @@ class Director(models.Model, ToMessageMixin):
 
 
 class ClockNode(models.Model, ToMessageMixin):
+    class Type(models.TextChoices):
+        MINUTE_HAND = "MINUTE_HAND"
+
     uuid = models.UUIDField(unique=True)
     uri = models.CharField(max_length=255)
     schedule_count = models.IntegerField(null=True)
@@ -103,13 +124,24 @@ class ClockNode(models.Model, ToMessageMixin):
     def rpcclient(self):
         return rpc.rpcclient.ClockNodeRpcClient(self.uri)
 
-    def deregister():
+    def unregister():
         try:
             self.rpcclient.deregister()
         except rpcclient.ClockNodeRpcClient.ConnectionError:
             logger.warning('Failed to communicate with clocknode {self}.')
         self.is_disabled = self.is_deleted = True
         self.save()
+
+    def update_from_registration_request(self, request):
+        self.uri = request.node.uri 
+        self.max_schedule_count = request.node.max_schedule_count
+        self.last_seen = now()
+        self.reschedule_on_registration = request.reschedule_on_registration
+
+    @classmethod
+    def from_registration_request(cls, request):
+        # TODO: support mutltiple algos and types
+        return MinuteHandClockNode.from_registration_request(request)
 
 
 class MinuteHandClockNode(ClockNode):
@@ -120,14 +152,13 @@ class MinuteHandClockNode(ClockNode):
         ...
 
     @classmethod
-    def from_registration_request(cls, registration_request):
-        return cls(
-            minute=registration_request.minute,
-            uri=registration_request.uri,
-            last_seen=datetime.datetime.now(),
-            max_schedule_count=registration_request.max_schedule_count,
+    def from_registration_request(cls, request):
+        clocknode = cls(
+            uuid=request.node.uuid,
+            minute=request.node.minute or 0 # TODO remove -- only for testing
         )
-
+        clocknode.update_from_registration_request(request)
+        return clocknode
 
     def route(self, schedule):
         ...

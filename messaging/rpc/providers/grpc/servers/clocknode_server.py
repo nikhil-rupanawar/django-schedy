@@ -70,7 +70,7 @@ class ClockNodeServer(
         print("ACK_READY")
         self.ack_ready()
 
-        print("\n\n====== Wating for first request.. =======")
+        print("\n\n====== Wating for first schedule.. =======")
 
         self._start_and_block()
 

@@ -58,14 +58,17 @@ class RegistryServer(
     def stop(self):
         pass
 
+    # TODO because typo two methods. it should be register_clocknode
     def register_clocknode(self, request, context):
         print(request)
+        clocknode = models.Director.register_clocknode(request)
+        return M_RegisterClockNodeResponse()
 
-    # TODO because typo two method. it should be register_clocknode
+    # TODO because typo two methods. it should be register_clocknode
     @marshal(M_RegisterClockNodeRequest, RegisterClockNodeResponse)
     def register_clock_node(self, request, context):
-        self.register_clocknode(request, context)
-        return M_RegisterClockNodeResponse()
+        return self.register_clocknode(request, context)
+
 
 if __name__ == '__main__':
     service = RegistryService()

@@ -1,5 +1,6 @@
 import abc
 
+
 class ClockNodeContract(metaclass=abc.ABCMeta):
     """ Contract Mixin for clock node rpc clients and server """
 

@@ -40,15 +40,16 @@ class ClockNodeServerConfig(ServerConfig):
     DEFAULT_APS_MAX_EXECUTERS = 5
     DEFAULT_APS_REDIS_HOST = 'localhost'
     DEFAULT_APS_REDIS_PORT = 6379
+    DEFAULT_CLOCK_MINUTE = 0
 
     @classmethod
     def from_env(cls):
         config = super(cls, cls).from_env()
-        minute = env.get('CLOCK_MINUTE')
+        minute = env.get('CLOCK_MINUTE', cls.DEFAULT_CLOCK_MINUTE)
         assert minute is not None, '"CLOCK_MINUTE" environment variable was not set.'
         config.minute = int(minute)
         config.ticker_type = env.get('TICKER_TYPE', cls.DEFAULT_TICKER_TYPE)
-        config.max_schedule_count = env.get('MAX_SCHEDULE_COUNT') or cls.DEFAULT_MAX_SCHEDULE_COUNT
+        config.max_schedule_count = env.get('MAX_SCHEDULE_COUNT', cls.DEFAULT_MAX_SCHEDULE_COUNT)
         if config.ticker_type == 'apscheduler_redis':
             config.ticker_config = cls._aps_ticker_config_from_env(config)
         return config
