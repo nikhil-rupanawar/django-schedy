@@ -1,28 +1,30 @@
 import os
 import enum
 import datetime
+import copy
+import django.db.models.options as options
 from uuid import uuid4, UUID
 from django.db import models
 from django_model_to_dict.mixins import ToDictMixin
 from common.util import DictModel
-
-# Create your models here.
 from django.db import models
 
+options.DEFAULT_NAMES = options.DEFAULT_NAMES + ('to_message_fields',)
+
+# Create your models here.
 
 def now():
     return datetime.datetime.utcnow()
 
 
 class ToMessageMixin(ToDictMixin):
-    to_message_fields = set()
-    to_message_fields_exclude = set()
-
     def to_message(self):
-        value_dict = DictModel(**super().to_dict())
-        msg = {}
+        to_message_fields = getattr(self._meta, 'to_message_fields', set([]))
+        to_message_fields_exclude = getattr(self._meta, 'to_message_fields_exclude', set([]))
+        value_dict = deepcopy(self.__dict__)
+        msg = DictModel()
         for k, v in value_dict.items():
-            if self.to_message_fields != '*' and (k not in self.to_message_fields or k in to_message_fields_exclude):
+            if k not in to_message_fields or k in to_message_fields_exclude:
                 continue
             elif isinstance(v, (datetime.datetime, UUID)):
                 msg[k] = str(v)
@@ -31,7 +33,7 @@ class ToMessageMixin(ToDictMixin):
         return msg
 
 
-class Director(models.Model, ToMessageMixin):
+class Director(models.Model):
     uuid = models.UUIDField(default=uuid4)
     name = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True)
@@ -39,24 +41,23 @@ class Director(models.Model, ToMessageMixin):
     registery_service_uri = models.CharField(max_length=255)
     clocknode_event_service_uri = models.CharField(max_length=255)
     schedule_event_service_uri = models.CharField(max_length=255)
-    minute_space_size = models.IntegerField()
- 
-    # Move to meta
-    to_message_fields = {'uuid', 'registery_service_uri', 'schedule_event_service_uri'}
+    minute_space_size = models.IntegerField(null=True)
+    is_space_size_dynamic = models.BooleanField(default=True)
+
+    @classmethod
+    def select(cls):
+        return cls.objects.first()
 
     @classmethod
     def register_clocknode(cls, request):
-        print(request.reschedule_on_registration, "hjhjh")
-        print(request.node.max_schedule_count, "hjhjh")
-        print(type(request.node.max_schedule_count), "hjhjh")
         try:
-            clocknode = ClockNode.objects.get(uuid=request.node.uuid)
+            clocknode = MinuteHandClockNode.objects.get(uuid=request.node.uuid)
             clocknode.update_from_registration_request(request)
             clocknode.save()
             return clocknode
         except ClockNode.DoesNotExist:
-            clocknode = ClockNode.from_registration_request(request)
-            clocknode.director = cls.objects.first()
+            clocknode = MinuteHandClockNode.from_registration_request(request)
+            clocknode.director = cls.select()
             clocknode.save()
             return clocknode
 
@@ -74,7 +75,7 @@ class Director(models.Model, ToMessageMixin):
 
     @classmethod
     def initialize(cls):
-        if cls.objects.first():
+        if cls.select():
             return
 
         cls.objects.create(
@@ -92,12 +93,33 @@ class Director(models.Model, ToMessageMixin):
                 'amqp://guest@localhost:5672/default_schedule_target_topic'
             ),
             minute_space_size=int(os.environ.get('MINUTE_SPACE_SIZE', 1)),
-       )
+        )
+
+    def get_minute_space_size(self):
+        if self.is_space_size_dynamic:
+            return MinuteHandClockNode.objects.distinct('minute').count()
+        return self.minute_space_size
+
+    def select_clocknodes_by_minute_hand(self, schedule):
+        minute_space_size = self.get_minute_space_size()
+        if not minute_space_size:
+            raise Exception('No ClockNode is registered to director')
+        schedule_minute = schedule.minute
+        schedule_hour = schedule.hour
+        if '/' in minute:
+            minute = minute.split('/')[1]
+        minute = int(minute)
+        minute_bucket = ((schedule_hour * 60) + schedule_minute) % self.get_minute_space_size()
+        return self.minutehandclocknode_set.order_by('last_used').filter(minute=minute_bucket)
 
 
-class ClockNode(models.Model, ToMessageMixin):
+class AbstractClockNode(models.Model):
+
     class Type(models.TextChoices):
         MINUTE_HAND = "MINUTE_HAND"
+
+    class Meta:
+        abstract = True
 
     uuid = models.UUIDField(unique=True)
     uri = models.CharField(max_length=255)
@@ -111,14 +133,7 @@ class ClockNode(models.Model, ToMessageMixin):
     registered_on = models.DateTimeField(auto_now_add=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
-    director = models.ForeignKey(Director, on_delete=models.SET_NULL, null=True)
 
-    @classmethod
-    def select_node(cls, schedule):
-        raise NotImplementedError("Not implemented")
-
-    def route(self, schedule):
-        raise NotImplementedError("Not implemented")
 
     @property
     def rpcclient(self):
@@ -144,12 +159,9 @@ class ClockNode(models.Model, ToMessageMixin):
         return MinuteHandClockNode.from_registration_request(request)
 
 
-class MinuteHandClockNode(ClockNode):
+class MinuteHandClockNode(AbstractClockNode):
     minute = models.IntegerField()
-
-    @classmethod
-    def select_node(cls, schedule):
-        ...
+    director = models.ForeignKey(Director, on_delete=models.SET_NULL, null=True)
 
     @classmethod
     def from_registration_request(cls, request):
@@ -167,8 +179,10 @@ class MinuteHandClockNode(ClockNode):
         ...
 
 
-class Schedule(models.Model, ToMessageMixin):
-    to_message_exclude_fields = {'created', 'updated', 'clocknode'}
+class AbstractSchedule(models.Model):
+
+    class Meta:
+        abstract = True
 
     class TriggerType(models.TextChoices):
         CRON = "CRON"
@@ -192,12 +206,11 @@ class Schedule(models.Model, ToMessageMixin):
     create = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
     create_by = models.CharField(max_length=255)
-    clocknode = models.ForeignKey(ClockNode, on_delete=models.SET_NULL, null=True)
     misfire_grace_time = models.IntegerField(null=True)
     type = models.IntegerField(null=True)
 
 
-class CronSchedule(Schedule):
+class CronSchedule(AbstractSchedule):
     second = models.CharField(max_length=255, null=True)
     minute = models.CharField(max_length=255, null=True)
     hour = models.CharField(max_length=255, null=True)
@@ -210,10 +223,5 @@ class CronSchedule(Schedule):
     end_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     timezone = models.CharField(max_length=255, null=True)
     jitter = models.IntegerField(null=True)
-
-    def to_dict(self):
-        d = self.__dict__.copy()
-
-    def to_message(self):
-        return DictModel(self.to_dict())
+    clocknode = models.ForeignKey(MinuteHandClockNode, on_delete=models.SET_NULL, null=True)
 

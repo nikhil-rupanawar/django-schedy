@@ -31,12 +31,12 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.auth",
+    #"django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "graphene_django",
+    #"django.contrib.sessions",
+    #"django.contrib.messages",
+    #"django.contrib.staticfiles",
+    #"graphene_django",
     "scheduler_director.scheduler_director",
     'polymorphic',
 ]
