@@ -62,7 +62,7 @@ PyYAML==3.12
 redis==3.5.3
 regex==2020.5.14
 reportlab==3.4.0
-requests==2.18.4
+requests==2.20.0
 requests-unixsocket==0.1.5
 Rx==1.6.1
 SecretStorage==2.3.1
